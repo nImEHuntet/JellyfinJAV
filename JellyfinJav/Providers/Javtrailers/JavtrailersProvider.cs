@@ -1,6 +1,5 @@
-namespace JellyfinJav.Providers.R18Provider
+namespace JellyfinJav.Providers.JavtrailersrProvider
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
@@ -15,76 +14,74 @@ namespace JellyfinJav.Providers.R18Provider
     using MediaBrowser.Model.Providers;
     using Microsoft.Extensions.Logging;
 
-    /// <summary>The provider for R18 videos.</summary>
-    public class R18Provider : IRemoteMetadataProvider<Movie, MovieInfo>, IHasOrder
+    /// <summary>The provider for Javtrailers videos.</summary>
+    public class JavtrailersProvider : IRemoteMetadataProvider<Movie, MovieInfo>, IHasOrder
     {
         private static readonly HttpClient HttpClient = new HttpClient();
         private readonly ILibraryManager libraryManager;
-        private readonly ILogger<R18Provider> logger;
+        private readonly ILogger<JavtrailersProvider> logger;
 
-        /// <summary>Initializes a new instance of the <see cref="R18Provider"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="JavtrailersProvider"/> class.</summary>
         /// <param name="libraryManager">Instance of the <see cref="ILibraryManager" />.</param>
         /// <param name="logger">Instance of the <see cref="ILogger" />.</param>
-        public R18Provider(ILibraryManager libraryManager, ILogger<R18Provider> logger)
+        public JavtrailersProvider(
+            ILibraryManager libraryManager,
+            ILogger<JavtrailersProvider> logger)
         {
             this.libraryManager = libraryManager;
             this.logger = logger;
         }
 
         /// <inheritdoc />
-        public string Name => "R18";
+        public string Name => "[Testing] Javtrailers";
 
         /// <inheritdoc />
-        public int Order => 99;
+        public int Order => 100;
 
         /// <inheritdoc />
         public async Task<MetadataResult<Movie>> GetMetadata(MovieInfo info, CancellationToken cancelToken)
         {
             var originalTitle = Utility.GetVideoOriginalTitle(info, this.libraryManager);
-            info.Name = originalTitle;
 
-            this.logger.LogInformation("[JellyfinJav] R18 - originalTitle: " + originalTitle);
+            this.logger.LogInformation("[JellyfinJav] Javtrailers - Scanning: " + originalTitle);
 
-            Api.Video? video;
-            if (info.ProviderIds.ContainsKey("R18"))
+            Api.Video? result;
+            if (info.ProviderIds.ContainsKey("Javtrailers"))
             {
-                video = await R18Client.LoadVideo(info.ProviderIds["R18"]).ConfigureAwait(false);
-                this.logger.LogInformation("[JellyfinJav] R18 - Scanning Video: " + video);
+                result = await JavtrailersClient.LoadVideo(info.ProviderIds["Javtrailers"]).ConfigureAwait(false);
+                this.logger.LogInformation("[JellyfinJav] Javtrailers - Scanning Video: " + result);
             }
             else
             {
                 var code = Utility.ExtractCodeFromFilename(originalTitle);
-                this.logger.LogInformation("[JellyfinJav] R18 - Am Code Null?: " + code);
+                this.logger.LogInformation("[JellyfinJav] Javtrailers - Am Code Null?: " + code);
                 if (code is null)
                 {
-                    this.logger.LogInformation("[JellyfinJav] R18 - Yes I am");
+                    this.logger.LogInformation("[JellyfinJav] Javtrailers - Yes I am");
                     return new MetadataResult<Movie>();
                 }
 
-                this.logger.LogInformation("[JellyfinJav] R18 - No! I'll go ahead and search");
-                video = await R18Client.SearchFirst(code).ConfigureAwait(false);
-                this.logger.LogInformation("[JellyfinJav] R18 - Searching r18.dev: " + video);
+                result = await JavtrailersClient.SearchFirst(code).ConfigureAwait(false);
             }
 
-            if (!video.HasValue)
+            if (!result.HasValue)
             {
-                this.logger.LogInformation("[JellyfinJav] R18 - Oh Noes!" + video);
+                this.logger.LogInformation("[JellyfinJav] Javtrailers - Oh Noes!" + result);
                 return new MetadataResult<Movie>();
             }
 
-            this.logger.LogInformation("[JellyfinJav] R18 - Found metadata: " + video);
+            this.logger.LogInformation("[JellyfinJav] Javtrailers - Found metadata: " + result);
             return new MetadataResult<Movie>
             {
                 Item = new Movie
                 {
-                    OriginalTitle = info.Name,
-                    Name = Utility.CreateVideoDisplayName(video.Value),
-                    PremiereDate = video.Value.ReleaseDate,
-                    ProviderIds = new Dictionary<string, string> { { "R18", video.Value.Id } },
-                    Studios = new[] { video.Value.Studio },
-                    Genres = video.Value.Genres.ToArray(),
+                    OriginalTitle = originalTitle,
+                    Name = Utility.CreateVideoDisplayName(result.Value),
+                    ProviderIds = new Dictionary<string, string> { { "Javtrailers", result.Value.Id } },
+                    Studios = new[] { result.Value.Studio },
+                    Genres = result.Value.Genres.ToArray(),
                 },
-                People = CreateActressList(video.Value),
+                People = CreateActressList(result.Value),
                 HasMetadata = true,
             };
         }
@@ -92,23 +89,14 @@ namespace JellyfinJav.Providers.R18Provider
         /// <inheritdoc />
         public async Task<IEnumerable<RemoteSearchResult>> GetSearchResults(MovieInfo info, CancellationToken cancelToken)
         {
-            var javCode = Utility.ExtractCodeFromFilename(info.Name);
-            if (string.IsNullOrEmpty(javCode))
-            {
-                return Array.Empty<RemoteSearchResult>();
-            }
-
-            this.logger.LogInformation("[JellyfinJav] R18 - Scanning: " + javCode);
-
-            return from video in await R18Client.Search(javCode).ConfigureAwait(false)
+            return from video in await JavtrailersClient.Search(info.Name).ConfigureAwait(false)
                    select new RemoteSearchResult
                    {
                        Name = video.Code,
                        ProviderIds = new Dictionary<string, string>
                        {
-                           { "R18", video.Id },
+                           { "Javtrailers", video.Id },
                        },
-                       ImageUrl = video.Cover?.ToString(),
                    };
         }
 
@@ -120,7 +108,7 @@ namespace JellyfinJav.Providers.R18Provider
 
         private static string NormalizeActressName(string name)
         {
-            if (Plugin.Instance?.Configuration.ActressNameOrder == ActressNameOrder.LastFirst)
+            if (Plugin.Instance?.Configuration.ActressNameOrder == ActressNameOrder.FirstLast)
             {
                 return string.Join(" ", name.Split(' ').Reverse());
             }

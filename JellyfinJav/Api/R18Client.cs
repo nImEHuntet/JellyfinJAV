@@ -2,13 +2,14 @@ namespace JellyfinJav.Api
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Net.Http;
     using System.Text.Json;
-    using System.Text.Json.Serialization;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using AngleSharp;
+    using AngleSharp.Dom;
 
     /// <summary>A web scraping client for r18.com.</summary>
     public static class R18Client
@@ -62,32 +63,34 @@ namespace JellyfinJav.Api
         /// <summary>Searches for a video by jav code.</summary>
         /// <param name="searchCode">The jav code. Ex: ABP-001.</param>
         /// <returns>A list of every matched video.</returns>
-        public static async Task<IEnumerable<VideoResult>> Search(string searchCode)
+        public static async Task<IEnumerable<VideoResult>>? Search(string searchCode)
         {
-            var response = await HttpClient.GetAsync($"https://www.r18.com/common/search/order=match/searchword={searchCode}").ConfigureAwait(false);
-            var html = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var doc = await Context.OpenAsync(req => req.Content(html)).ConfigureAwait(false);
-
             var videos = new List<VideoResult>();
+            string encodedSearchCode = Uri.EscapeDataString(searchCode);
+            var jsonResponse = await HttpClient.GetAsync($"https://r18.dev/videos/vod/movies/detail/-/dvd_id={encodedSearchCode}/json").ConfigureAwait(false);
+            string? contentId = null;
 
-            foreach (var n in doc.QuerySelectorAll(".item-list"))
+            if (jsonResponse.IsSuccessStatusCode)
             {
-                var code = n.QuerySelector("img")?.GetAttribute("alt");
-                var id = n.GetAttribute("data-content_id");
-                var cover = n.QuerySelector("img")?.GetAttribute("data-original");
-
-                if (code is not null && cover is not null)
+                string json = await jsonResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                dynamic? jsonObj = JsonSerializer.Deserialize<dynamic>(json);
+                contentId = jsonObj.GetProperty("content_id").GetString();
+                var imagesElement = jsonObj.GetProperty("images");
+                var jacketImageElement = imagesElement.GetProperty("jacket_image");
+                string large2Element = jacketImageElement.GetProperty("large2").GetString();
+                videos.Add(new VideoResult
                 {
-                    videos.Add(new VideoResult
-                    {
-                        Code = code,
-                        Id = id,
-                        Cover = new Uri(cover),
-                    });
-                }
-            }
+                    Code = searchCode.ToUpper(),
+                    Id = contentId,
+                    Cover = new Uri(large2Element),
+                });
 
-            return videos;
+                return videos;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>Searches for a video by jav code, and returns the first result.</summary>
@@ -96,52 +99,45 @@ namespace JellyfinJav.Api
         public static async Task<Video?> SearchFirst(string searchCode)
         {
             var results = await Search(searchCode).ConfigureAwait(false);
-            if (!results.Any())
+            if (results.Any())
+            {
+                return await LoadVideo(results.First().Id).ConfigureAwait(false);
+            }
+            else
             {
                 return null;
             }
-
-            // See if we can find an exact match first.
-            foreach (var result in results)
-            {
-                if (string.Equals(searchCode, result.Code))
-                {
-                    return await LoadVideo(result.Id).ConfigureAwait(false);
-                }
-            }
-
-            return await LoadVideo(results.First().Id).ConfigureAwait(false);
         }
 
         /// <summary>Loads a video by id.</summary>
-        /// <param name="id">The r18.com unique video identifier.</param>
+        /// <param name="id">The r18.dev unique video identifier.</param>
         /// <returns>The parsed video.</returns>
         public static async Task<Video?> LoadVideo(string id)
         {
-            var response = await HttpClient.GetAsync($"https://www.r18.com/api/v4f/contents/{id}").ConfigureAwait(false);
+            var response = await HttpClient.GetAsync($"https://r18.dev/videos/vod/movies/detail/-/id={id}/").ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
                 return null;
             }
 
-            var res = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var videoResponse = JsonSerializer.Deserialize<VideoResponse>(res, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            });
+            var html = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var doc = await Context.OpenAsync(req => req.Content(html)).ConfigureAwait(false);
 
-            var code = videoResponse?.Data?.Code;
-            var title = Decensor(videoResponse?.Data?.Title);
-            var actresses = videoResponse?.Data?.Actresses?.Select(a => NormalizeActress(a.Name)) ?? Array.Empty<string>();
-            var genres = videoResponse?.Data?.Categories?.Select(genre => Decensor(genre.Name)).OfType<string>().Where(genre => NotSaleGenre(genre)) ?? Array.Empty<string>();
-            var studio = videoResponse?.Data?.Maker?.Name;
-            var boxArt = videoResponse?.Data?.Images?.JacketImage?.Large;
-            var cover = videoResponse?.Data?.Images?.JacketImage?.Medium;
-            DateTime? releaseDate = null;
-            if (!string.IsNullOrEmpty(videoResponse?.Data?.ReleaseDate))
-            {
-                releaseDate = DateTime.Parse(videoResponse.Data.ReleaseDate);
-            }
+            var code = doc.QuerySelector("#dvd-id")?.TextContent.Trim();
+            var title = (doc.QuerySelector("#title")?.TextContent.Trim()?.Substring(doc.QuerySelector("#dvd-id")?.TextContent.Trim()?.Length ?? 0).TrimStart(':', ' ') ?? string.Empty).Trim();
+            var actresses = doc.QuerySelectorAll(".performer")
+                               ?.Select(n => n.TextContent.Trim()).ToArray()
+                                ?? Array.Empty<string>();
+            var genres = doc.QuerySelectorAll(".category")
+                ?.SelectMany(n => n.QuerySelectorAll("a"))
+                .Select(a => a.TextContent.Trim())
+                .Where(genre => NotSaleGenre(genre))
+                .ToArray() ?? Array.Empty<string>();
+            var studio = doc.QuerySelector("#studio")?.TextContent.Trim();
+            string? cover = doc.QuerySelector("#jacket")?.GetAttribute("src");
+            string? boxArt = cover?.Replace("pl.jpg", "ps.jpg");
+            string dateString = doc.QuerySelector("#release-date").TextContent;
+            DateTime releaseDate = DateTime.ParseExact(dateString, "yyyy-MM-dd", null);
 
             if (title is null || code is null)
             {
@@ -162,13 +158,8 @@ namespace JellyfinJav.Api
                 releaseDate: releaseDate);
         }
 
-        private static string NormalizeActress(string? actress)
+        private static string NormalizeActress(string actress)
         {
-            if (actress is null)
-            {
-                return string.Empty;
-            }
-
             var rx = new Regex(@"^(.+?)( ?\(.+\))?$");
             var match = rx.Match(actress);
 
@@ -199,77 +190,12 @@ namespace JellyfinJav.Api
             return match.Groups[2].Value;
         }
 
-        private static string? Decensor(string? censored)
-        {
-            if (censored is null)
-            {
-                return null;
-            }
-
-            var rx = new Regex(string.Join("|", CensoredWords.Keys.Select(k => Regex.Escape(k))));
-            return rx.Replace(censored, m => CensoredWords[m.Value]);
-        }
-
-        private static bool NotSaleGenre(string genre)
+        private static bool NotSaleGenre(string? genre)
         {
             var rx = new Regex(@"\bsale\b", RegexOptions.IgnoreCase);
             var match = rx.Match(genre ?? string.Empty);
 
             return !match.Success;
-        }
-
-        private class VideoResponse
-        {
-            public DataC? Data { get; set; }
-
-            public class DataC
-            {
-                [JsonPropertyName("dvd_id")]
-                public string? Code { get; set; }
-
-                public string? Title { get; set; }
-
-                [JsonPropertyName("release_date")]
-                public string? ReleaseDate { get; set; }
-
-                public Actress[] Actresses { get; set; } = Array.Empty<Actress>();
-
-                public Image? Images { get; set; }
-
-                public Category[] Categories { get; set; } = Array.Empty<Category>();
-
-                public string? Studio { get; set; }
-
-                public MakerC? Maker { get; set; }
-
-                public class Actress
-                {
-                    public string? Name { get; set; }
-                }
-
-                public class Image
-                {
-                    [JsonPropertyName("jacket_image")]
-                    public JacketImageC? JacketImage { get; set; }
-
-                    public class JacketImageC
-                    {
-                        public string? Large { get; set; }
-
-                        public string? Medium { get; set; }
-                    }
-                }
-
-                public class Category
-                {
-                    public string? Name { get; set; }
-                }
-
-                public class MakerC
-                {
-                    public string? Name { get; set; }
-                }
-            }
         }
     }
 }

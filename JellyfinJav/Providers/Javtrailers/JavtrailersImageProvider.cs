@@ -1,4 +1,4 @@
-﻿namespace JellyfinJav.Providers.JavlibraryProvider
+namespace JellyfinJav.Providers.JavtrailersProvider
 {
     using System;
     using System.Collections.Generic;
@@ -12,13 +12,13 @@
     using MediaBrowser.Model.Entities;
     using MediaBrowser.Model.Providers;
 
-    /// <summary>The provider for Javlibrary video covers.</summary>
-    public class JavlibraryImageProvider : IRemoteImageProvider, IHasOrder
+    /// <summary>The provider for Javtrailers video covers.</summary>
+    public class JavtrailersImageProvider : IRemoteImageProvider, IHasOrder
     {
         private static readonly HttpClient HttpClient = new HttpClient();
 
         /// <inheritdoc />
-        public string Name => "[BORKEN] Javlibrary";
+        public string Name => "Javtrailers";
 
         /// <inheritdoc />
         public int Order => 100;
@@ -26,13 +26,13 @@
         /// <inheritdoc />
         public async Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancelToken)
         {
-            var id = item.GetProviderId("Javlibrary");
+            var id = item.GetProviderId("Javtrailers");
             if (string.IsNullOrEmpty(id))
             {
                 return Array.Empty<RemoteImageInfo>();
             }
 
-            var video = await JavlibraryClient.LoadVideo(id).ConfigureAwait(false);
+            var video = await JavtrailersClient.LoadVideo(id).ConfigureAwait(false);
 
             return new RemoteImageInfo[]
             {
@@ -40,7 +40,7 @@
                 {
                     ProviderName = this.Name,
                     Type = ImageType.Primary,
-                    Url = video?.BoxArt,
+                    Url = video?.Cover,
                 },
             };
         }

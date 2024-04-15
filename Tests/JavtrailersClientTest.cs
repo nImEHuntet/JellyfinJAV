@@ -1,6 +1,4 @@
-#pragma warning disable SA1600
-
-namespace Tests
+﻿namespace Tests
 {
     using System;
     using System.Linq;
@@ -8,47 +6,70 @@ namespace Tests
     using JellyfinJav.Api;
     using NUnit.Framework;
 
-    public class JavlibraryClientTest
+#pragma warning disable SA1606
+#pragma warning disable SA1600 // Elements should be documented
+    public class JavtrailersClientTest
+#pragma warning restore SA1600 // Elements should be documented
     {
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Test]
         public async Task TestSearchMany()
         {
-            var results = await JavlibraryClient.Search("abp").ConfigureAwait(false);
+            var results = await JavtrailersClient.Search("INSTV").ConfigureAwait(false);
 
-            Assert.AreEqual(results.Count(), 20);
-            Assert.AreEqual(results.ElementAt(5).Code, "ABP-006");
-            Assert.AreEqual(results.ElementAt(5).Id, "javlijaqye");
+            Assert.AreEqual(24, results.Count());
+            Assert.AreEqual("INSTV-551", results.ElementAt(5).Code);
+            Assert.AreEqual("h_1472instv00551", results.ElementAt(5).Id);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Test]
         public async Task TestSearchSingle()
         {
-            var results = await JavlibraryClient.Search("HND-723").ConfigureAwait(false);
+            var results = await JavtrailersClient.Search("SDDE-592").ConfigureAwait(false);
 
-            Assert.AreEqual(results.ElementAt(0).Code, "HND-723");
-            Assert.AreEqual(results.ElementAt(0).Id, "javli6laqy");
+            Assert.AreEqual("SDDE-592", results.ElementAt(0).Code);
+            Assert.AreEqual("1sdde00592", results.ElementAt(0).Id);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Test]
         public async Task TestSearchFirstNoResults()
         {
-            var result = await JavlibraryClient.SearchFirst("HND-999").ConfigureAwait(false);
+            var result = await JavtrailersClient.SearchFirst("6942069").ConfigureAwait(false); // Javtrailers makes it really hard to have 0 results
 
             Assert.AreEqual(null, result);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Test]
         public async Task TestSearchFirstInvalid()
         {
-            var result = await JavlibraryClient.SearchFirst("259LUXU-1142").ConfigureAwait(false);
+            var result = await JavtrailersClient.SearchFirst("there shouldn't be any").ConfigureAwait(false); // Javtrailers makes it really hard to have any invalids
 
             Assert.AreEqual(null, result);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Test]
         public async Task TestSearchFirstSingleResult()
         {
-            var result = await JavlibraryClient.SearchFirst("SSNI-230").ConfigureAwait(false);
+            var result = await JavtrailersClient.SearchFirst("SSNI-230").ConfigureAwait(false);
 
             var correct = new Video(
                 id: "javli7bvzi",
@@ -64,10 +85,14 @@ namespace Tests
             Assert.AreEqual(correct, result);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Test]
         public async Task TestLoadVideoNormalizeTitle()
         {
-            var result = await JavlibraryClient.LoadVideo("javli6lg24").ConfigureAwait(false);
+            var result = await JavtrailersClient.LoadVideo("SDDE-592").ConfigureAwait(false);
 
             var correct = new Video(
                 id: "javli6lg24",
@@ -80,13 +105,17 @@ namespace Tests
                 cover: "https://pics.dmm.co.jp/mono/movie/adult/1stars126/1stars126ps.jpg",
                 releaseDate: null); // TODO
 
-            Assert.AreEqual(result, correct);
+            Assert.AreEqual(correct, result);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Test]
         public async Task TestLoadVideoOneActress()
         {
-            var result = await JavlibraryClient.LoadVideo("javlio354u").ConfigureAwait(false);
+            var result = await JavtrailersClient.LoadVideo("ABP-002").ConfigureAwait(false);
 
             var correct = new Video(
                 id: "javlio354u",
@@ -99,13 +128,17 @@ namespace Tests
                 cover: "https://pics.dmm.co.jp/mono/movie/adult/118abp002/118abp002ps.jpg",
                 releaseDate: null); // TODO
 
-            Assert.AreEqual(result, correct);
+            Assert.AreEqual(correct, result);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Test]
         public async Task TestLoadVideoManyActresses()
         {
-            var result = await JavlibraryClient.LoadVideo("javli6bm5q").ConfigureAwait(false);
+            var result = await JavtrailersClient.LoadVideo("SDDE-592").ConfigureAwait(false);
 
             var correct = new Video(
                 id: "javli6bm5q",
@@ -118,13 +151,17 @@ namespace Tests
                 cover: "https://pics.dmm.co.jp/mono/movie/adult/1sdde592/1sdde592ps.jpg",
                 releaseDate: null); // TODO
 
-            Assert.AreEqual(result, correct);
+            Assert.AreEqual(correct, result);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Test]
         public async Task TestLoadVideoNoActresses()
         {
-            var result = await JavlibraryClient.LoadVideo("javliarg3u").ConfigureAwait(false);
+            var result = await JavtrailersClient.LoadVideo("IPTD-041").ConfigureAwait(false);
 
             var correct = new Video(
                 id: "javliarg3u",
@@ -137,7 +174,8 @@ namespace Tests
                 cover: "https://pics.dmm.co.jp/mono/movie/adult/iptd041/iptd041ps.jpg",
                 releaseDate: null); // TODO
 
-            Assert.AreEqual(result, correct);
+            Assert.AreEqual(correct, result);
         }
     }
 }
+#pragma warning restore SA1606

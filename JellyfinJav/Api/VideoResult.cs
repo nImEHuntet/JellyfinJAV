@@ -1,6 +1,7 @@
 namespace JellyfinJav.Api
 {
     using System;
+    using System.Text.Json.Serialization;
 
     /// <summary>Represents a video search result.</summary>
     public struct VideoResult

@@ -1,21 +1,21 @@
-﻿namespace JellyfinJav.Providers.JavlibraryProvider
+﻿namespace JellyfinJav.Providers.JavtrailersProvider
 {
     using MediaBrowser.Controller.Entities.Movies;
     using MediaBrowser.Controller.Providers;
     using MediaBrowser.Model.Entities;
     using MediaBrowser.Model.Providers;
 
-    /// <summary>External ID for a Javlibrary video.</summary>
-    public class JavlibraryExternalId : IExternalId
+    /// <summary>External ID for a Javtrailers video.</summary>
+    public class JavTrailersExternalId : IExternalId
     {
         /// <inheritdoc />
-        public string ProviderName => "Javlibrary";
+        public string ProviderName => "Javtrailers";
 
         /// <inheritdoc />
-        public string Key => "Javlibrary";
+        public string Key => "Javtrailers";
 
         /// <inheritdoc />
-        public string UrlFormatString => "https://www.javlibrary.com/en/?v={0}";
+        public string UrlFormatString => "https://javtrailers.com/video/{0}";
 
         /// <inheritdoc />
         public ExternalIdMediaType? Type => ExternalIdMediaType.Movie;

@@ -15,7 +15,7 @@ namespace JellyfinJav.Providers.R18Provider
         public string Key => "R18";
 
         /// <inheritdoc />
-        public string UrlFormatString => "https://www.r18.com/videos/vod/movies/detail/-/id={0}/";
+        public string UrlFormatString => "https://r18.dev/videos/vod/movies/detail/-/id={0}/";
 
         /// <inheritdoc />
         public ExternalIdMediaType? Type => ExternalIdMediaType.Movie;

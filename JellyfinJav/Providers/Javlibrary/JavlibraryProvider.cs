@@ -1,4 +1,4 @@
-namespace JellyfinJav.Providers.JavlibraryProvider
+﻿namespace JellyfinJav.Providers.JavlibraryProvider
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -33,7 +33,7 @@ namespace JellyfinJav.Providers.JavlibraryProvider
         }
 
         /// <inheritdoc />
-        public string Name => "Javlibrary";
+        public string Name => "[BROKEN] Javlibrary";
 
         /// <inheritdoc />
         public int Order => 100;

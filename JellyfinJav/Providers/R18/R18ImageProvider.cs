@@ -29,25 +29,43 @@ namespace JellyfinJav.Providers.R18Provider
         public int Order => 99;
 
         /// <inheritdoc />
-        public Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancelToken)
+        public async Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancelToken)
         {
             var id = item.GetProviderId("R18");
             if (string.IsNullOrEmpty(id))
             {
-                return Task.FromResult<IEnumerable<RemoteImageInfo>>(Array.Empty<RemoteImageInfo>());
+                return Array.Empty<RemoteImageInfo>();
             }
 
-            var primaryImage = string.Format("https://pics.r18.com/digital/video/{0}/{0}pl.jpg", id);
-
-            return Task.FromResult<IEnumerable<RemoteImageInfo>>(new RemoteImageInfo[]
+            var primaryImageFormats = new[]
             {
-                new RemoteImageInfo
-                {
-                    ProviderName = this.Name,
-                    Type = ImageType.Primary,
-                    Url = primaryImage,
-                },
-            });
+                $"https://awsimgsrc.dmm.com/dig/digital/video/{id}/{id}pl.jpg",
+                $"https://pics.dmm.co.jp/mono/movie/adult/{id}/{id}pl.jpg",
+            };
+
+            var primaryImage = await this.GetValidImageUrl(primaryImageFormats, cancelToken);
+
+            if (string.IsNullOrEmpty(primaryImage))
+            {
+                // If no valid image URL is found, return the fallback URL
+                primaryImage = $"https://awsimgsrc.dmm.com/dig/digital/video/{id}/{id}pl.jpg";
+            }
+
+            if (string.IsNullOrEmpty(primaryImage))
+            {
+                // If the primary image URL is empty, return an empty collection
+                return Array.Empty<RemoteImageInfo>();
+            }
+
+            return new[]
+            {
+        new RemoteImageInfo
+        {
+            ProviderName = this.Name,
+            Type = ImageType.Primary,
+            Url = primaryImage,
+        },
+            };
         }
 
         /// <inheritdoc />
@@ -66,5 +84,40 @@ namespace JellyfinJav.Providers.R18Provider
 
         /// <inheritdoc />
         public bool Supports(BaseItem item) => item is Movie;
+
+        private async Task<string?> GetValidImageUrl(IEnumerable<string> imageFormats, CancellationToken cancellationToken)
+        {
+            foreach (var imageUrl in imageFormats)
+            {
+                try
+                {
+                    using (var client = new HttpClient())
+                    using (var response = await client.GetAsync(imageUrl, cancellationToken))
+                    {
+                        if (response.IsSuccessStatusCode)
+                        {
+                            // If the response is successful, return the URL
+                            return imageUrl;
+                        }
+                    }
+                }
+                catch (HttpRequestException)
+                {
+                    // Ignore HttpRequestException and try the next URL
+                }
+                catch (OperationCanceledException)
+                {
+                    // If the operation is canceled, propagate the cancellation
+                    throw;
+                }
+                catch (Exception)
+                {
+                    // Ignore other exceptions and try the next URL
+                }
+            }
+
+            // If no valid image URL is found, return null
+            return null;
+        }
     }
 }

@@ -8,6 +8,8 @@ namespace JellyfinJav.Api
     using System.Web;
     using AngleSharp;
     using AngleSharp.Dom;
+    using FlareSolverrSharp;
+    using FlareSolverrSharp.Solvers;
 
     /// <summary>A web scraping client for javlibrary.com.</summary>
     public static class JavlibraryClient
@@ -29,7 +31,11 @@ namespace JellyfinJav.Api
         /// </example>
         public static async Task<IEnumerable<VideoResult>> Search(string identifier)
         {
-            var doc = await LoadPage("https://www.javlibrary.com/en/vl_searchbyid.php?keyword=" + identifier).ConfigureAwait(false);
+            var apiURL = new Uri("https://www.javlibrary.com/en/vl_searchbyid.php?keyword=" + identifier);
+
+            var config = Configuration.Default.WithDefaultLoader();
+            var context = BrowsingContext.New(config);
+            var doc = await context.OpenAsync($"https://www.javlibrary.com/en/vl_searchbyid.php?keyword=" + identifier).ConfigureAwait(false);
 
             // if only one result was found, and so we were taken directly to the video page.
             if (doc.QuerySelector("#video_id") != null)
@@ -111,7 +117,7 @@ namespace JellyfinJav.Api
             if (doc.QuerySelector("p em")?.TextContent == "Search returned no result." ||
                 doc.QuerySelector("#badalert td")?.TextContent == "The search term you entered is invalid. Please try a different term.")
             {
-                return null;
+                return new Video(code: doc.ToHtml(), id: "response", title: string.Empty, actresses: new List<string>(), genres: new List<string>(), studio: string.Empty, boxArt: string.Empty, cover: string.Empty, releaseDate: null);
             }
 
             // if only one result was found, and so we were taken directly to the video page.
@@ -167,7 +173,7 @@ namespace JellyfinJav.Api
 
             var genres = doc.QuerySelectorAll(".genre a").Select(n => n.TextContent);
             var studio = doc.QuerySelector("#video_maker a")?.TextContent;
-            var boxArt = doc.QuerySelector("#video_jacket_img")?.GetAttribute("src")?.Insert(0, "https:");
+            var boxArt = doc.QuerySelector("#video_jacket_img")?.GetAttribute("src");
             var cover = boxArt?.Replace("pl.jpg", "ps.jpg");
 
             return new Api.Video(

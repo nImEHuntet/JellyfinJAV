@@ -8,17 +8,20 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AngleSharp" Version="0.14.0" />
-    <PackageReference Include="Jellyfin.Controller" Version="10.7.6" />
-    <PackageReference Include="Jellyfin.Model" Version="10.7.6" />
-    <PackageReference Include="Skiasharp" Version="2.80.2" />
+    <PackageReference Include="FlareSolverrSharp" Version="3.0.7" />
+    <PackageReference Include="Jellyfin.Controller" Version="10.7.1" />
+    <PackageReference Include="Jellyfin.Model" Version="10.7.1" />
+    <PackageReference Include="Skiasharp" Version="2.88.8" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Api\R18Client.cs~RF1204cac1.TMP" />
     <None Remove="config_page.html" />
   </ItemGroup>
 
