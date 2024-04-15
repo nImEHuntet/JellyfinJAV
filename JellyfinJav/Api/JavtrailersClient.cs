@@ -113,7 +113,7 @@ namespace JellyfinJav.Api
                 return await LoadVideo(new Uri($"https://javtrailers.com{contentURL}")).ConfigureAwait(false);
             }
 
-            return new Video(code: contentURL, id: "Find me the content_url", title: findContentID.ToHtml(), actresses: new List<string>(), genres: new List<string>(), studio: string.Empty, boxArt: string.Empty, cover: string.Empty, releaseDate: null);
+            return null;
         }
 
         private static Video? ParseVideoPage(IDocument doc)
@@ -138,9 +138,9 @@ namespace JellyfinJav.Api
                 }
         }
 
-            var id = doc.QuerySelector("p:contains('Content ID:')")?.TextContent?.Trim()?.Replace("Content ID:", string.Empty).Trim();
-            var code = doc.QuerySelector("p:contains('DVD ID:')")?.TextContent?.Trim()?.Replace("DVD ID:", string.Empty).Trim();
-            var title = doc.QuerySelector("h1.lead")?.TextContent?.Replace(code, string.Empty).Trim();
+            string? id = doc.QuerySelector("p:contains('Content ID:')")?.TextContent?.Trim()?.Replace("Content ID:", string.Empty).Trim();
+            string? code = doc.QuerySelector("p:contains('DVD ID:')")?.TextContent?.Trim()?.Replace("DVD ID:", string.Empty).Trim();
+            string? title = doc.QuerySelector("h1.lead")?.TextContent?.Replace(code!, string.Empty).Trim();
             var studio = doc.QuerySelector("p:contains('Studio:')")?.QuerySelector("a")?.TextContent?.Trim();
             var boxArt = doc.QuerySelector("#thumbnailContainer img")?.GetAttribute("src");
             var cover = boxArt?.Replace("ps.jpg", "pl.jpg");
@@ -150,9 +150,9 @@ namespace JellyfinJav.Api
             var releaseDate = DateTime.TryParseExact(releaseDateText, "dd MMM yyyy", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime parsedDate) ? parsedDate : (DateTime?)null;
 
             return new Api.Video(
-                id: id,
-                code: code,
-                title: title,
+                id: id!,
+                code: code!,
+                title: title!,
                 actresses: actresses,
                 genres: genres,
                 studio: studio,

@@ -100,7 +100,7 @@ namespace JellyfinJav.Providers.R18Provider
 
             this.logger.LogInformation("[JellyfinJav] R18 - Scanning: " + javCode);
 
-            return from video in await R18Client.Search(javCode).ConfigureAwait(false)
+            return from video in await R18Client.Search(javCode) !.ConfigureAwait(false)
                    select new RemoteSearchResult
                    {
                        Name = video.Code,

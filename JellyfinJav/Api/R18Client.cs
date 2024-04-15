@@ -74,7 +74,7 @@ namespace JellyfinJav.Api
             {
                 string json = await jsonResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 dynamic? jsonObj = JsonSerializer.Deserialize<dynamic>(json);
-                contentId = jsonObj.GetProperty("content_id").GetString();
+                contentId = jsonObj!.GetProperty("content_id").GetString();
                 var imagesElement = jsonObj.GetProperty("images");
                 var jacketImageElement = imagesElement.GetProperty("jacket_image");
                 string large2Element = jacketImageElement.GetProperty("large2").GetString();
@@ -89,7 +89,7 @@ namespace JellyfinJav.Api
             }
             else
             {
-                return null;
+                return null!;
             }
         }
 
@@ -98,7 +98,7 @@ namespace JellyfinJav.Api
         /// <returns>The parsed video.</returns>
         public static async Task<Video?> SearchFirst(string searchCode)
         {
-            var results = await Search(searchCode).ConfigureAwait(false);
+            var results = await Search(searchCode) !.ConfigureAwait(false);
             if (results.Any())
             {
                 return await LoadVideo(results.First().Id).ConfigureAwait(false);
@@ -120,11 +120,11 @@ namespace JellyfinJav.Api
                 return null;
             }
 
-            var html = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            string? html = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var doc = await Context.OpenAsync(req => req.Content(html)).ConfigureAwait(false);
 
-            var code = doc.QuerySelector("#dvd-id")?.TextContent.Trim();
-            var title = (doc.QuerySelector("#title")?.TextContent.Trim()?.Substring(doc.QuerySelector("#dvd-id")?.TextContent.Trim()?.Length ?? 0).TrimStart(':', ' ') ?? string.Empty).Trim();
+            string? code = doc.QuerySelector("#dvd-id")?.TextContent.Trim();
+            string? title = (doc.QuerySelector("#title")?.TextContent.Trim()?.Substring(doc.QuerySelector("#dvd-id")?.TextContent.Trim()?.Length ?? 0).TrimStart(':', ' ') ?? string.Empty).Trim();
             var actresses = doc.QuerySelectorAll(".performer")
                                ?.Select(n => n.TextContent.Trim()).ToArray()
                                 ?? Array.Empty<string>();
@@ -133,7 +133,7 @@ namespace JellyfinJav.Api
                 .Select(a => a.TextContent.Trim())
                 .Where(genre => NotSaleGenre(genre))
                 .ToArray() ?? Array.Empty<string>();
-            var studio = doc.QuerySelector("#studio")?.TextContent.Trim();
+            string? studio = doc.QuerySelector("#studio")?.TextContent.Trim();
             string? cover = doc.QuerySelector("#jacket")?.GetAttribute("src");
             string? boxArt = cover?.Replace("pl.jpg", "ps.jpg");
             string dateString = doc.QuerySelector("#release-date").TextContent;
@@ -178,7 +178,7 @@ namespace JellyfinJav.Api
                 return title;
             }
 
-            var name = actresses.ElementAt(0);
+            string? name = actresses.ElementAt(0);
             var rx = new Regex($"^({name} - )?(.+?)( ?-? {name})?$");
             var match = rx.Match(title);
 

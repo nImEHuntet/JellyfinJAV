@@ -2,16 +2,17 @@
 Don't expect perfection.
 
 # Metadata Providers
-* R18 (Videos)
-* JAVLibrary (Videos)
+* R18.dev (Videos)
+* JAVLibrary (Videos) - Broken
+* JavTrailers (Videos)
 * AsianScreens (Actresses)
 * Warashi Asian Pornstars (Actresses)
 
 # Instructions
 ### Installation
-Within your Jellyfin admin panel, go to Plugins -> Repositories, and add
-https://raw.githubusercontent.com/imaginary-upside/JellyfinJav/master/manifest.json.
-Then switch over to the Catalog tab and install the latest version.
+
+Currently you'll have to Download the source and run the package.py and Copy it into the Jellyfin Plugins folders. Working out how to add it as repo. 
+
 
 ### Usage
 When adding the media library, make sure to select "Content type: movies".
@@ -21,6 +22,7 @@ When adding the media library, make sure to select "Content type: movies".
 * ABP200.mkv
 * ABP-200.mkv
 * some random text abp-200 more random text.mkv
+> This should still be how it works, I didn't change any of the filename detection, I've only ever tested with ABP-200 type of file naming.
 
 # Development
 ### Requirements

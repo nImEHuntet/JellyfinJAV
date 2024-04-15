@@ -1,0 +1,126 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "W:\\Dev\\Repos\\JellyfinJAV\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{0B5322E5-53C7-4D33-B404-593FB1418881}|Tests\\Tests.csproj|w:\\dev\\repos\\jellyfinjav\\tests\\asianscreensclienttest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0B5322E5-53C7-4D33-B404-593FB1418881}|Tests\\Tests.csproj|solutionrelative:tests\\asianscreensclienttest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0B5322E5-53C7-4D33-B404-593FB1418881}|Tests\\Tests.csproj|w:\\dev\\repos\\jellyfinjav\\tests\\tests.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{0B5322E5-53C7-4D33-B404-593FB1418881}|Tests\\Tests.csproj|solutionrelative:tests\\tests.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0B5322E5-53C7-4D33-B404-593FB1418881}|Tests\\Tests.csproj|w:\\dev\\repos\\jellyfinjav\\tests\\r18clienttest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0B5322E5-53C7-4D33-B404-593FB1418881}|Tests\\Tests.csproj|solutionrelative:tests\\r18clienttest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C935854-2F75-4924-A165-305947383DE5}|JellyfinJav\\JellyfinJav.csproj|w:\\dev\\repos\\jellyfinjav\\jellyfinjav\\providers\\r18\\r18provider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C935854-2F75-4924-A165-305947383DE5}|JellyfinJav\\JellyfinJav.csproj|solutionrelative:jellyfinjav\\providers\\r18\\r18provider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C935854-2F75-4924-A165-305947383DE5}|JellyfinJav\\JellyfinJav.csproj|w:\\dev\\repos\\jellyfinjav\\jellyfinjav\\api\\javtrailersclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C935854-2F75-4924-A165-305947383DE5}|JellyfinJav\\JellyfinJav.csproj|solutionrelative:jellyfinjav\\api\\javtrailersclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C935854-2F75-4924-A165-305947383DE5}|JellyfinJav\\JellyfinJav.csproj|w:\\dev\\repos\\jellyfinjav\\jellyfinjav\\api\\r18client.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C935854-2F75-4924-A165-305947383DE5}|JellyfinJav\\JellyfinJav.csproj|solutionrelative:jellyfinjav\\api\\r18client.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 4,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{e1b7d1f8-9b3c-49b1-8f4f-bfc63a88835d}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Tests",
+              "DocumentMoniker": "W:\\Dev\\Repos\\JellyfinJAV\\Tests\\Tests.csproj",
+              "RelativeDocumentMoniker": "Tests\\Tests.csproj",
+              "ToolTip": "W:\\Dev\\Repos\\JellyfinJAV\\Tests\\Tests.csproj",
+              "RelativeToolTip": "Tests\\Tests.csproj",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2024-04-15T16:51:01.165Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "R18ClientTest.cs",
+              "DocumentMoniker": "W:\\Dev\\Repos\\JellyfinJAV\\Tests\\R18ClientTest.cs",
+              "RelativeDocumentMoniker": "Tests\\R18ClientTest.cs",
+              "ToolTip": "W:\\Dev\\Repos\\JellyfinJAV\\Tests\\R18ClientTest.cs",
+              "RelativeToolTip": "Tests\\R18ClientTest.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAAACAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-15T16:50:30.005Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "R18Provider.cs",
+              "DocumentMoniker": "W:\\Dev\\Repos\\JellyfinJAV\\JellyfinJav\\Providers\\R18\\R18Provider.cs",
+              "RelativeDocumentMoniker": "JellyfinJav\\Providers\\R18\\R18Provider.cs",
+              "ToolTip": "W:\\Dev\\Repos\\JellyfinJAV\\JellyfinJav\\Providers\\R18\\R18Provider.cs",
+              "RelativeToolTip": "JellyfinJav\\Providers\\R18\\R18Provider.cs",
+              "ViewState": "AQIAAFIAAAAAAAAAAAAvwGYAAAA/AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-15T16:50:01.02Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "AsianscreensClientTest.cs",
+              "DocumentMoniker": "W:\\Dev\\Repos\\JellyfinJAV\\Tests\\AsianscreensClientTest.cs",
+              "RelativeDocumentMoniker": "Tests\\AsianscreensClientTest.cs",
+              "ToolTip": "W:\\Dev\\Repos\\JellyfinJAV\\Tests\\AsianscreensClientTest.cs",
+              "RelativeToolTip": "Tests\\AsianscreensClientTest.cs",
+              "ViewState": "AQIAADEAAAAAAAAAAAAwwEUAAAAwAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-15T16:47:43.445Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "JavtrailersClient.cs",
+              "DocumentMoniker": "W:\\Dev\\Repos\\JellyfinJAV\\JellyfinJav\\Api\\JavtrailersClient.cs",
+              "RelativeDocumentMoniker": "JellyfinJav\\Api\\JavtrailersClient.cs",
+              "ToolTip": "W:\\Dev\\Repos\\JellyfinJAV\\JellyfinJav\\Api\\JavtrailersClient.cs",
+              "RelativeToolTip": "JellyfinJav\\Api\\JavtrailersClient.cs",
+              "ViewState": "AQIAAIgAAAAAAAAAAAAwwI8AAAAMAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-15T16:44:52.277Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "R18Client.cs",
+              "DocumentMoniker": "W:\\Dev\\Repos\\JellyfinJAV\\JellyfinJav\\Api\\R18Client.cs",
+              "RelativeDocumentMoniker": "JellyfinJav\\Api\\R18Client.cs",
+              "ToolTip": "W:\\Dev\\Repos\\JellyfinJAV\\JellyfinJav\\Api\\R18Client.cs",
+              "RelativeToolTip": "JellyfinJav\\Api\\R18Client.cs",
+              "ViewState": "AQIAAHwAAAAAAAAAAAAAAGQAAAAzAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-15T16:44:15.428Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -2,11 +2,11 @@
 
 namespace Tests
 {
-    using JellyfinJav.Api;
-    using NUnit.Framework;
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using JellyfinJav.Api;
+    using NUnit.Framework;
 
     public class R18ClientTest
     {
