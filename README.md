@@ -11,7 +11,7 @@ Don't expect perfection.
 # Instructions
 ### Installation
 
-Currently you'll have to download the release zip then extract it into your plugins folder, looking into fixing the manifest and repo so you can install it via the catalog within jellyfin.
+Add the Repo url to Jellyfin using `https://raw.githubusercontent.com/Kyuhaku/JellyfinJAV/master/manifest.json`
 
 
 ### Usage
