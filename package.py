@@ -19,7 +19,7 @@ meta = {
     "guid": "1d5fffc2-1028-4553-9660-bd4966899e44",
     "name": "JellyfinJav",
     "description": "JAV metadata providers for Jellyfin.",
-    "owner": "imaginary-upside",
+    "owner": "Kyuhaku",
     "overview": "JAV metadata providers for Jellyfin.",
     "targetAbi": f"{targetAbi}.0",
     "timestamp": timestamp,
@@ -46,7 +46,7 @@ entry = {
     "checksum": md5(open(f"release/jellyfinjav_{version}.zip", "rb").read()).hexdigest(),
     "changelog": "",
     "targetAbi": f"{targetAbi}.0",
-    "sourceUrl": f"https://github.com/imaginary-upside/JellyfinJav/releases/download/{version}/jellyfinjav_{version}.zip",
+    "sourceUrl": f"https://github.com/Kyuhaku/JellyfinJAV/releases/download/{version}/jellyfinjav_{version}.zip",
     "timestamp": timestamp,
     "version": version
 }
