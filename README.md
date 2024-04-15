@@ -11,7 +11,7 @@ Don't expect perfection.
 # Instructions
 ### Installation
 
-Currently you'll have to Download the source and run the package.py and Copy it into the Jellyfin Plugins folders. Working out how to add it as repo. 
+Currently you'll have to download the release zip then extract it into your plugins folder, looking into fixing the manifest and repo so you can install it via the catalog within jellyfin.
 
 
 ### Usage
