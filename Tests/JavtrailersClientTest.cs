@@ -69,11 +69,11 @@
         [Test]
         public async Task TestSearchFirstSingleResult()
         {
-            var result = await JavtrailersClient.SearchFirst("SSNI-230").ConfigureAwait(false);
+            var result = await JavtrailersClient.SearchFirst("HODV-21840").ConfigureAwait(false);
 
             var correct = new Video(
                 id: "javli7bvzi",
-                code: "SSNI-230",
+                code: "HODV-21840",
                 title: "Big Slap Brilliantly Seductive Ass Pub Miss",
                 actresses: new[] { "Hoshino Nami" },
                 genres: new[] { "Solowork", "Nasty, Hardcore", "Cowgirl", "Prostitutes", "Butt", "Risky Mosaic", "Huge Butt" },

@@ -12,6 +12,7 @@ namespace JellyfinJav.Api
     using AngleSharp.Dom;
     using AngleSharp.Html.Dom;
     using AngleSharp.Html.Parser;
+    using MediaBrowser.Controller.Entities;
     using Microsoft.Extensions.Logging;
     using static System.Net.Mime.MediaTypeNames;
 
@@ -65,30 +66,39 @@ namespace JellyfinJav.Api
         /// <returns>The first result of the search, or null if nothing was found.</returns>
         public static async Task<Video?> SearchFirst(string code)
         {
-            var config = Configuration.Default.WithDefaultLoader();
-            var context = BrowsingContext.New(config);
-            var doc = await context.OpenAsync($"https://javtrailers.com/search/{code}");
+           var santizedSearch = code.Replace("-", string.Empty);
+           var config = Configuration.Default.WithDefaultLoader();
+           var context = BrowsingContext.New(config);
+           var doc = await context.OpenAsync($"https://javtrailers.com/search/{santizedSearch}");
+           var h3Element = doc.QuerySelector("h3");
+           var matchedEntry = string.Empty;
 
-            var h3Element = doc.QuerySelector("h3");
-            var firstEntry = doc.QuerySelector(".card-container");
-
-            if (firstEntry != null)
+           foreach (var n in doc.QuerySelectorAll(".card-container"))
             {
-                return await LoadVideo(new Uri("https://javtrailers.com" + firstEntry.QuerySelector("a").GetAttribute("href"))).ConfigureAwait(false);
-
-                // var test = await LoadVideo(firstEntry.QuerySelector("a").GetAttribute("href"));
-                // return new Video(code: test.ToString(), id: "It should load the video to parse", title: firstEntry.QuerySelector("a").GetAttribute("href"), actresses: new List<string>(), genres: new List<string>(), studio: string.Empty, boxArt: string.Empty, cover: string.Empty, releaseDate: null);
+                var id = n.QuerySelector("a").GetAttribute("href");
+                var imgAlt = n.QuerySelector("img").GetAttribute("alt").Replace(" jav", string.Empty).Replace("-", string.Empty);
+                if (id.Contains(santizedSearch) || imgAlt == santizedSearch)
+                {
+                    matchedEntry = id;
+                }
             }
-            else if (h3Element != null && h3Element.TextContent.Contains("No videos"))
-            {
-                return null;
 
-                // return new Video(id: "No Videos", code: doc.ToHtml(), title: string.Empty, actresses: new List<string>(), genres: new List<string>(), studio: string.Empty, boxArt: string.Empty, cover: string.Empty, releaseDate: null);
-            }
-            else
+           if (h3Element != null && h3Element.TextContent.Contains("No videos"))
             {
                 return null;
+
+                // return new Video(id: $"I'm Looking for: {code} {santizedSearch}", code: $"But I got mE: {matchedEntry!} h3: {h3Element.TextContent}", title: doc.ToHtml(), actresses: new List<string>(), genres: new List<string>(), studio: string.Empty, boxArt: string.Empty, cover: string.Empty, releaseDate: null);
             }
+
+           if (matchedEntry.Contains("/video/"))
+            {
+                // return await LoadVideo(new Uri("https://javtrailers.com" + matchedEntry)).ConfigureAwait(false);
+                return new Video(id: $"I'm Looking for: {code} {santizedSearch}", code: $"But I got {matchedEntry!} {h3Element}", title: doc.ToHtml(), actresses: new List<string>(), genres: new List<string>(), studio: string.Empty, boxArt: string.Empty, cover: string.Empty, releaseDate: null);
+            }
+
+           return null;
+
+            // return new Video(id: $"I'm gonna Look for: {code}", code: $"But I got {matchedEntry!}", title: doc.ToHtml(), actresses: new List<string>(), genres: new List<string>(), studio: string.Empty, boxArt: string.Empty, cover: string.Empty, releaseDate: null);
         }
 
         /// <summary>Loads a specific JAV by id.</summary>
