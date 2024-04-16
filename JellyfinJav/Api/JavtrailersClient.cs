@@ -92,8 +92,9 @@ namespace JellyfinJav.Api
 
            if (matchedEntry.Contains("/video/"))
             {
-                // return await LoadVideo(new Uri("https://javtrailers.com" + matchedEntry)).ConfigureAwait(false);
-                return new Video(id: $"I'm Looking for: {code} {santizedSearch}", code: $"But I got {matchedEntry!} {h3Element}", title: doc.ToHtml(), actresses: new List<string>(), genres: new List<string>(), studio: string.Empty, boxArt: string.Empty, cover: string.Empty, releaseDate: null);
+                return await LoadVideo(new Uri("https://javtrailers.com" + matchedEntry)).ConfigureAwait(false);
+
+                // return new Video(id: $"I'm Looking for: {code} {santizedSearch}", code: $"But I got {matchedEntry!} {h3Element}", title: doc.ToHtml(), actresses: new List<string>(), genres: new List<string>(), studio: string.Empty, boxArt: string.Empty, cover: string.Empty, releaseDate: null);
             }
 
            return null;

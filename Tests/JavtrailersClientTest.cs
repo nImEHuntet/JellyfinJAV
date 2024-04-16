@@ -69,7 +69,7 @@
         [Test]
         public async Task TestSearchFirstSingleResult()
         {
-            var result = await JavtrailersClient.SearchFirst("HODV-21840").ConfigureAwait(false);
+            var result = await JavtrailersClient.SearchFirst("MEYD-906").ConfigureAwait(false);
 
             var correct = new Video(
                 id: "javli7bvzi",
