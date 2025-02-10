@@ -10,7 +10,7 @@ import shutil
 
 tree = ET.parse("JellyfinJav/JellyfinJav.csproj")
 version = tree.find("./PropertyGroup/AssemblyVersion").text
-targetAbi = tree.find("./ItemGroup/*[@Include='Jellyfin.Model']").attrib["Version"]
+targetAbi = tree.find("./ItemGroup/*[@Include='Jellyfin.Controller']").attrib["Version"]
 targetAbi = re.sub("-\w+", "", targetAbi) # Remove trailing release candidate version.
 timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -37,8 +37,8 @@ subprocess.run([
     "Release"
 ])
 
-shutil.copy("JellyfinJav/bin/Release/net50/JellyfinJav.dll", f"release/{version}/")
-shutil.copy(f"{Path.home()}/.nuget/packages/anglesharp/0.14.0/lib/netstandard2.0/AngleSharp.dll", f"release/{version}/")
+shutil.copy("JellyfinJav/bin/Release/net80/JellyfinJav.dll", f"release/{version}/")
+shutil.copy(f"{Path.home()}/.nuget/packages/anglesharp/1.1.2/lib/netstandard2.0/AngleSharp.dll", f"release/{version}/")
 
 shutil.make_archive(f"release/jellyfinjav_{version}", "zip", f"release/{version}/")
 

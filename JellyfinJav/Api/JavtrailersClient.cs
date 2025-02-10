@@ -30,12 +30,12 @@ namespace JellyfinJav.Api
             var videos = new List<VideoResult>();
             var config = Configuration.Default.WithDefaultLoader();
             var context = BrowsingContext.New(config);
-            var doc = await context.OpenAsync($"https://javtrailers.com/search/{identifier}").ConfigureAwait(false);
+            var doc = await context.OpenAsync($"https://www.av01.tv/en/search/videos?search_query={identifier}").ConfigureAwait(false);
 
             foreach (var n in doc.QuerySelectorAll(".card-container"))
             {
-                var code = n.QuerySelector(".card-img-top").GetAttribute("alt").Replace(" jav", string.Empty);
-                var id = n.QuerySelector("a").GetAttribute("href").Split('/')[2];
+                var code = n?.QuerySelector(".card-img-top")?.GetAttribute("alt")?.Replace(" jav", string.Empty);
+                var id = n?.QuerySelector("a")?.GetAttribute("href")?.Split('/')[2];
 
                 if (code is not null && id is not null)
                 {
@@ -69,15 +69,14 @@ namespace JellyfinJav.Api
            var santizedSearch = code.Replace("-", string.Empty);
            var config = Configuration.Default.WithDefaultLoader();
            var context = BrowsingContext.New(config);
-           var doc = await context.OpenAsync($"https://javtrailers.com/search/{santizedSearch}");
+           var doc = await context.OpenAsync($"https://sextb.net/search/{santizedSearch}");
            var h3Element = doc.QuerySelector("h3");
            var matchedEntry = string.Empty;
 
-           foreach (var n in doc.QuerySelectorAll(".card-container"))
+           foreach (var n in doc.QuerySelectorAll(".well.well-sm "))
             {
-                var id = n.QuerySelector("a").GetAttribute("href");
-                var imgAlt = n.QuerySelector("img").GetAttribute("alt").Replace(" jav", string.Empty).Replace("-", string.Empty);
-                if (id.Contains(santizedSearch) || imgAlt == santizedSearch)
+                var id = n.QuerySelector("a")?.GetAttribute("href");
+                if (id!.Contains(santizedSearch))
                 {
                     matchedEntry = id;
                 }
@@ -85,19 +84,19 @@ namespace JellyfinJav.Api
 
            if (h3Element != null && h3Element.TextContent.Contains("No videos"))
             {
-                return null;
+                // return null;
 
-                // return new Video(id: $"I'm Looking for: {code} {santizedSearch}", code: $"But I got mE: {matchedEntry!} h3: {h3Element.TextContent}", title: doc.ToHtml(), actresses: new List<string>(), genres: new List<string>(), studio: string.Empty, boxArt: string.Empty, cover: string.Empty, releaseDate: null);
+                return new Video(id: $"I'm Looking for: {code} {santizedSearch}", code: $"But I got mE: {matchedEntry!} h3: {h3Element.TextContent}", title: doc.ToHtml(), actresses: new List<string>(), genres: new List<string>(), studio: string.Empty, boxArt: string.Empty, cover: string.Empty, releaseDate: null);
             }
 
            if (matchedEntry.Contains("/video/"))
             {
-                return await LoadVideo(new Uri("https://javtrailers.com" + matchedEntry)).ConfigureAwait(false);
+                // return await LoadVideo(new Uri(https://www.av01.tv" + matchedEntry)).ConfigureAwait(false);
 
-                // return new Video(id: $"I'm Looking for: {code} {santizedSearch}", code: $"But I got {matchedEntry!} {h3Element}", title: doc.ToHtml(), actresses: new List<string>(), genres: new List<string>(), studio: string.Empty, boxArt: string.Empty, cover: string.Empty, releaseDate: null);
+                return new Video(id: $"I'm Looking for: {code} {santizedSearch}", code: $"But I got {matchedEntry!} {h3Element}", title: doc.ToHtml(), actresses: new List<string>(), genres: new List<string>(), studio: string.Empty, boxArt: string.Empty, cover: string.Empty, releaseDate: null);
             }
 
-           return null;
+           return new Video(id: $"I'm Looking for: {code} {santizedSearch}", code: $"But I got {matchedEntry!} {h3Element}", title: doc.ToHtml(), actresses: new List<string>(), genres: new List<string>(), studio: string.Empty, boxArt: string.Empty, cover: string.Empty, releaseDate: null);
 
             // return new Video(id: $"I'm gonna Look for: {code}", code: $"But I got {matchedEntry!}", title: doc.ToHtml(), actresses: new List<string>(), genres: new List<string>(), studio: string.Empty, boxArt: string.Empty, cover: string.Empty, releaseDate: null);
         }
@@ -112,16 +111,16 @@ namespace JellyfinJav.Api
 
             if (id.Contains("/video/"))
             {
-                var doc = await context.OpenAsync($"https://javtrailers.com{id}").ConfigureAwait(false);
+                var doc = await context.OpenAsync($"https://www.av01.tv{id}").ConfigureAwait(false);
                 return ParseVideoPage(doc);
             }
 
-            var findContentID = await context.OpenAsync($"https://javtrailers.com/search/{id}").ConfigureAwait(false);
-            var contentURL = findContentID.QuerySelector(".card-container").QuerySelector("a").GetAttribute("href").Trim();
+            var findContentID = await context.OpenAsync($"https://www.av01.tv/en/search/videos?search_query={id}").ConfigureAwait(false);
+            var contentURL = findContentID?.QuerySelector(".well.well-sm a[href]")?.GetAttribute("href")?.Trim();
 
             if (contentURL != null)
             {
-                return await LoadVideo(new Uri($"https://javtrailers.com{contentURL}")).ConfigureAwait(false);
+                return await LoadVideo(new Uri($"https://www.av01.tv{contentURL}")).ConfigureAwait(false);
             }
 
             return null;
@@ -129,36 +128,15 @@ namespace JellyfinJav.Api
 
         private static Video? ParseVideoPage(IDocument doc)
         {
-            static (string, string) SeparateEnglishJapaneseName(string fullName)
-            {
-                string pattern = @"([\p{IsBasicLatin}\s]+)\s+([\p{IsHiragana}\p{IsKatakana}\p{IsCJKUnifiedIdeographs}]+)";
-
-                // Use regex to match the pattern
-                Match match = Regex.Match(fullName, pattern);
-
-                // Construct the separated name
-                if (match.Success)
-                {
-                    string englishName = match.Groups[1].Value.Trim();
-                    string japaneseName = match.Groups[2].Value.Trim();
-                    return (englishName, japaneseName);
-                }
-                else
-                {
-                    return (fullName, string.Empty);
-                }
-        }
-
-            string? id = doc.QuerySelector("p:contains('Content ID:')")?.TextContent?.Trim()?.Replace("Content ID:", string.Empty).Trim();
-            string? code = doc.QuerySelector("p:contains('DVD ID:')")?.TextContent?.Trim()?.Replace("DVD ID:", string.Empty).Trim();
-            string? title = doc.QuerySelector("h1.lead")?.TextContent?.Replace(code!, string.Empty).Trim();
-            var studio = doc.QuerySelector("p:contains('Studio:')")?.QuerySelector("a")?.TextContent?.Trim();
-            var boxArt = doc.QuerySelector("#thumbnailContainer img")?.GetAttribute("src");
+            string? id = doc.QuerySelector("span.info_item[aria-label='ID']")?.TextContent.Trim();
+            string? code = doc.GetElementById("DVD-ID")?.TextContent.Trim();
+            string? title = "Test";
+            var studio = "Test";
+            var boxArt = "Test";
             var cover = boxArt?.Replace("ps.jpg", "pl.jpg");
-            var genres = doc.QuerySelectorAll("p:contains('Categories:') a").Select(a => a.TextContent.Trim()).ToList();
-            var actresses = doc.QuerySelectorAll("p:contains('Cast(s):') a").Select(a => SeparateEnglishJapaneseName(a.TextContent.Trim())).SelectMany(tuple => new[] { tuple.Item1, tuple.Item2 });
-            var releaseDateText = doc.QuerySelector("p:contains('Release Date:')")?.TextContent?.Trim()?.Replace("Release Date:", string.Empty).Trim();
-            var releaseDate = DateTime.TryParseExact(releaseDateText, "dd MMM yyyy", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime parsedDate) ? parsedDate : (DateTime?)null;
+            var genres = new List<string> { "apple", "banana", "orange", "grape", "kiwi" };
+            var actresses = new List<string> { "apple", "banana", "orange", "grape", "kiwi" };
+            var releaseDate = DateTime.Now;
 
             return new Api.Video(
                 id: id!,

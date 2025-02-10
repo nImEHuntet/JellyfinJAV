@@ -40,7 +40,7 @@ namespace JellyfinJav.Providers.R18Provider
             var primaryImageFormats = new[]
             {
                 $"https://awsimgsrc.dmm.com/dig/digital/video/{id}/{id}pl.jpg",
-                $"https://pics.dmm.co.jp/mono/movie/adult/{id}/{id}pl.jpg",
+            $"https://pics.dmm.co.jp/mono/movie/adult/{id}/{id}pl.jpg",
             };
 
             var primaryImage = await this.GetValidImageUrl(primaryImageFormats, cancelToken);

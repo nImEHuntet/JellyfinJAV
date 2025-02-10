@@ -54,7 +54,7 @@ namespace JellyfinJav.Providers
                 return $"{letters}-{digits}"; // Include hyphen between letters and digits
             }
 
-            return null;
+            return filename;
         }
 
         /// <summary>Creates a video's display name according to the plugin's selected configuration.</summary>

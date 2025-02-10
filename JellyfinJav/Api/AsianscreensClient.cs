@@ -118,7 +118,7 @@ namespace JellyfinJav.Api
         {
             var cell = doc.QuerySelectorAll("td")
                           ?.FirstOrDefault(n => n.TextContent == cellName)
-                          ?.NextElementSibling
+                          ?.NextElementSibling?
                           .TextContent;
 
             if (cell == "n/a")
@@ -131,7 +131,7 @@ namespace JellyfinJav.Api
 
         private static string? GetCover(IDocument doc)
         {
-            var path = doc.QuerySelector("img[src*=\"/products/400000/portraits/\"]")
+            var path = doc.QuerySelector("img[src*=\"/products/400000/portraits/\"]")?
                           .GetAttribute("src");
 
             if (path == "/products/400000/portraits/no_picture_available.gif")
@@ -190,10 +190,7 @@ namespace JellyfinJav.Api
             foreach (var row in actressRows)
             {
                 var name = row.QuerySelector("td:nth-child(1)")?.TextContent;
-                var id = row.QuerySelector("a")
-                            ?.GetAttribute("href")
-                            .TrimStart('/')
-                            .Replace(".asp", string.Empty);
+                var id = row.QuerySelector("a")?.GetAttribute("href")?.TrimStart('/').Replace(".asp", string.Empty);
                 if (name is null || id is null)
                 {
                     continue;

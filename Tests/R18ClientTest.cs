@@ -15,7 +15,7 @@ namespace Tests
         {
             var results = await R18Client.Search("sora").ConfigureAwait(false);
 
-            Assert.AreEqual(null, results);
+            Assert.That(null, Is.EqualTo(results));
         }
 
         [Test]
@@ -23,14 +23,14 @@ namespace Tests
         {
             var results = await R18Client.Search("noresult").ConfigureAwait(false);
 
-            Assert.AreEqual(0, results.Count());
+            Assert.That(0, Is.EqualTo(results.Count()));
         }
 
         [Test]
         public async Task TestSearchFirst()
         {
             var expected = new Video(
-                id: "mudr25",
+                id: "mudr255",
                 code: "MUDR-255",
                 title: "Female Shinobi Training: Shinobi Fallen - Live Action Version",
                 actresses: new[] { "Waka Misono" },
@@ -42,7 +42,7 @@ namespace Tests
 
             var result = await R18Client.SearchFirst("mudr-255").ConfigureAwait(false);
 
-            Assert.AreEqual(expected, result);
+            Assert.That(expected, Is.EqualTo(result));
         }
 
         [Test]
@@ -50,7 +50,7 @@ namespace Tests
         {
             var result = await R18Client.SearchFirst("testdata").ConfigureAwait(false);
 
-            Assert.AreEqual(null, result);
+            Assert.That(null, Is.EqualTo(result));
         }
 
         [Test]
@@ -69,7 +69,7 @@ namespace Tests
 
             var result = await R18Client.LoadVideo("ssni00643").ConfigureAwait(false);
 
-            Assert.AreEqual(expected, result);
+            Assert.That(expected, Is.EqualTo(result));
         }
 
         [Test]
@@ -88,7 +88,7 @@ namespace Tests
 
             var result = await R18Client.LoadVideo("njvr00023").ConfigureAwait(false);
 
-            Assert.AreEqual(expected, result);
+            Assert.That(expected, Is.EqualTo(result));
         }
 
         [Test]
@@ -96,7 +96,7 @@ namespace Tests
         {
             var result = await R18Client.LoadVideo("invalid").ConfigureAwait(false);
 
-            Assert.AreEqual(null, result);
+            Assert.That(null, Is.EqualTo(result));
         }
     }
 }

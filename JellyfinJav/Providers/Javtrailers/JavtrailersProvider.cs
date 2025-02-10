@@ -33,7 +33,7 @@ namespace JellyfinJav.Providers.JavtrailersrProvider
         }
 
         /// <inheritdoc />
-        public string Name => "[Testing] Javtrailers";
+        public string Name => "[IGNORE] Javtrailers";
 
         /// <inheritdoc />
         public int Order => 100;
@@ -81,7 +81,7 @@ namespace JellyfinJav.Providers.JavtrailersrProvider
                     Studios = new[] { result.Value.Studio },
                     Genres = result.Value.Genres.ToArray(),
                 },
-                People = CreateActressList(result.Value),
+                People = null,
                 HasMetadata = true,
             };
         }
@@ -118,16 +118,11 @@ namespace JellyfinJav.Providers.JavtrailersrProvider
 
         private static List<PersonInfo> CreateActressList(Api.Video video)
         {
-            if (Plugin.Instance?.Configuration.EnableActresses == false)
-            {
-                return new List<PersonInfo>();
-            }
-
             return (from actress in video.Actresses
                     select new PersonInfo
                     {
                         Name = NormalizeActressName(actress),
-                        Type = PersonType.Actor,
+                        Type = Jellyfin.Data.Enums.PersonKind.Actor,
                     }).ToList();
         }
     }

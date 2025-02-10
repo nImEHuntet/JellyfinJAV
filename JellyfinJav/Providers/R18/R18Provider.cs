@@ -6,6 +6,7 @@ namespace JellyfinJav.Providers.R18Provider
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using Jellyfin.Data.Enums;
     using JellyfinJav.Api;
     using MediaBrowser.Controller.Entities;
     using MediaBrowser.Controller.Entities.Movies;
@@ -22,10 +23,14 @@ namespace JellyfinJav.Providers.R18Provider
         private readonly ILibraryManager libraryManager;
         private readonly ILogger<R18Provider> logger;
 
-        /// <summary>Initializes a new instance of the <see cref="R18Provider"/> class.</summary>
-        /// <param name="libraryManager">Instance of the <see cref="ILibraryManager" />.</param>
-        /// <param name="logger">Instance of the <see cref="ILogger" />.</param>
+#pragma warning disable SA1614 // Element parameter documentation should have text
+        /// <summary>
+        /// Initializes a new instance of the <see cref="R18Provider"/> class.
+        /// </summary>
+        /// <param name="libraryManager"></param>
+        /// <param name="logger"></param>
         public R18Provider(ILibraryManager libraryManager, ILogger<R18Provider> logger)
+#pragma warning restore SA1614 // Element parameter documentation should have text
         {
             this.libraryManager = libraryManager;
             this.logger = logger;
@@ -54,14 +59,12 @@ namespace JellyfinJav.Providers.R18Provider
             else
             {
                 var code = Utility.ExtractCodeFromFilename(originalTitle);
-                this.logger.LogInformation("[JellyfinJav] R18 - Am Code Null?: " + code);
                 if (code is null)
                 {
-                    this.logger.LogInformation("[JellyfinJav] R18 - Yes I am");
+                    this.logger.LogInformation("[JellyfinJav] R18 - Code is NULL " + code + "|" + originalTitle);
                     return new MetadataResult<Movie>();
                 }
 
-                this.logger.LogInformation("[JellyfinJav] R18 - No! I'll go ahead and search");
                 video = await R18Client.SearchFirst(code).ConfigureAwait(false);
                 this.logger.LogInformation("[JellyfinJav] R18 - Searching r18.dev: " + video);
             }
@@ -73,6 +76,7 @@ namespace JellyfinJav.Providers.R18Provider
             }
 
             this.logger.LogInformation("[JellyfinJav] R18 - Found metadata: " + video);
+
             return new MetadataResult<Movie>
             {
                 Item = new Movie
@@ -84,7 +88,7 @@ namespace JellyfinJav.Providers.R18Provider
                     Studios = new[] { video.Value.Studio },
                     Genres = video.Value.Genres.ToArray(),
                 },
-                People = CreateActressList(video.Value),
+                People = AddActressesToPeople(video.Value),
                 HasMetadata = true,
             };
         }
@@ -98,9 +102,9 @@ namespace JellyfinJav.Providers.R18Provider
                 return Array.Empty<RemoteSearchResult>();
             }
 
-            this.logger.LogInformation("[JellyfinJav] R18 - Scanning: " + javCode);
+            this.logger.LogInformation("[JellyfinJav] R18 - Getting Code: " + javCode);
 
-            return from video in await R18Client.Search(javCode) !.ConfigureAwait(false)
+            return from video in await R18Client.Search(javCode)!.ConfigureAwait(false)
                    select new RemoteSearchResult
                    {
                        Name = video.Code,
@@ -128,19 +132,37 @@ namespace JellyfinJav.Providers.R18Provider
             return name;
         }
 
-        private static List<PersonInfo> CreateActressList(Api.Video video)
+        private List<PersonInfo> AddActressesToPeople(Api.Video video)
         {
-            if (Plugin.Instance?.Configuration.EnableActresses == false)
+            var people = new List<PersonInfo>();
+
+            if (video.Actresses == null || !video.Actresses.Any())
             {
-                return new List<PersonInfo>();
+                this.logger.LogInformation("[JellyfinJav] R18 - No actresses found in video metadata.");
+                return people;
             }
 
-            return (from actress in video.Actresses
-                    select new PersonInfo
-                    {
-                        Name = NormalizeActressName(actress),
-                        Type = PersonType.Actor,
-                    }).ToList();
+            foreach (var actress in video.Actresses)
+            {
+                var person = new PersonInfo
+                {
+                    Name = NormalizeActressName(actress),
+                    Type = PersonKind.Actor
+                };
+                AddPerson(person, people);
+            }
+
+            return people;
+        }
+
+        private void AddPerson(PersonInfo p, List<PersonInfo> people)
+        {
+            if (people == null)
+            {
+                people = new List<PersonInfo>();
+            }
+
+            PeopleHelper.AddPerson(people, p);
         }
     }
 }

@@ -5,11 +5,13 @@ namespace JellyfinJav.Api
     using System.Globalization;
     using System.Linq;
     using System.Net.Http;
-    using System.Text.Json;
+    using System.Reflection.Metadata;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using AngleSharp;
     using AngleSharp.Dom;
+    using AngleSharp.Html.Dom;
+    using Newtonsoft.Json;
 
     /// <summary>A web scraping client for r18.com.</summary>
     public static class R18Client
@@ -55,34 +57,28 @@ namespace JellyfinJav.Api
         private static readonly HttpClient HttpClient = new HttpClient();
         private static readonly IBrowsingContext Context = BrowsingContext.New();
 
-        static R18Client()
-        {
-            HttpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
-        }
-
         /// <summary>Searches for a video by jav code.</summary>
         /// <param name="searchCode">The jav code. Ex: ABP-001.</param>
         /// <returns>A list of every matched video.</returns>
         public static async Task<IEnumerable<VideoResult>>? Search(string searchCode)
         {
             var videos = new List<VideoResult>();
-            string encodedSearchCode = Uri.EscapeDataString(searchCode);
-            var jsonResponse = await HttpClient.GetAsync($"https://r18.dev/videos/vod/movies/detail/-/dvd_id={encodedSearchCode}/json").ConfigureAwait(false);
-            string? contentId = null;
+            var jsonResponse = await HttpClient.GetAsync($"https://r18.dev/videos/vod/movies/detail/-/dvd_id={searchCode}/json").ConfigureAwait(false);
+            string? contentId;
 
             if (jsonResponse.IsSuccessStatusCode)
             {
                 string json = await jsonResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                dynamic? jsonObj = JsonSerializer.Deserialize<dynamic>(json);
-                contentId = jsonObj!.GetProperty("content_id").GetString();
-                var imagesElement = jsonObj.GetProperty("images");
-                var jacketImageElement = imagesElement.GetProperty("jacket_image");
-                string large2Element = jacketImageElement.GetProperty("large2").GetString();
+#pragma warning disable CS8600
+                dynamic jsonObj = JsonConvert.DeserializeObject(json);
+#pragma warning restore CS8600
+                contentId = jsonObj!["content_id"];
+                string large2Url = jsonObj!["images"]["jacket_image"]["large2"];
                 videos.Add(new VideoResult
                 {
                     Code = searchCode.ToUpper(),
                     Id = contentId,
-                    Cover = new Uri(large2Element),
+                    Cover = new Uri(large2Url),
                 });
 
                 return videos;
@@ -98,7 +94,8 @@ namespace JellyfinJav.Api
         /// <returns>The parsed video.</returns>
         public static async Task<Video?> SearchFirst(string searchCode)
         {
-            var results = await Search(searchCode) !.ConfigureAwait(false);
+            var results = await Search(searchCode)!.ConfigureAwait(false);
+
             if (results.Any())
             {
                 return await LoadVideo(results.First().Id).ConfigureAwait(false);
@@ -126,17 +123,17 @@ namespace JellyfinJav.Api
             string? code = doc.QuerySelector("#dvd-id")?.TextContent.Trim();
             string? title = (doc.QuerySelector("#title")?.TextContent.Trim()?.Substring(doc.QuerySelector("#dvd-id")?.TextContent.Trim()?.Length ?? 0).TrimStart(':', ' ') ?? string.Empty).Trim();
             var actresses = doc.QuerySelectorAll(".performer")
-                               ?.Select(n => n.TextContent.Trim()).ToArray()
-                                ?? Array.Empty<string>();
+                                   ?.Select(n => n.TextContent.Trim()).ToArray()
+                                    ?? Array.Empty<string>();
             var genres = doc.QuerySelectorAll(".category")
-                ?.SelectMany(n => n.QuerySelectorAll("a"))
-                .Select(a => a.TextContent.Trim())
-                .Where(genre => NotSaleGenre(genre))
-                .ToArray() ?? Array.Empty<string>();
+                    ?.SelectMany(n => n.QuerySelectorAll("a"))
+                    .Select(a => a.TextContent.Trim())
+                    .Where(genre => NotSaleGenre(genre))
+                    .ToArray() ?? Array.Empty<string>();
             string? studio = doc.QuerySelector("#studio")?.TextContent.Trim();
             string? cover = doc.QuerySelector("#jacket")?.GetAttribute("src");
             string? boxArt = cover?.Replace("pl.jpg", "ps.jpg");
-            string dateString = doc.QuerySelector("#release-date").TextContent;
+            string dateString = doc!.QuerySelector("#release-date")!.TextContent;
             DateTime releaseDate = DateTime.ParseExact(dateString, "yyyy-MM-dd", null);
 
             if (title is null || code is null)
@@ -147,15 +144,15 @@ namespace JellyfinJav.Api
             title = NormalizeTitle(title, actresses);
 
             return new Video(
-                id: id,
-                code: code,
-                title: title,
-                actresses: actresses,
-                genres: genres,
-                studio: studio,
-                boxArt: boxArt,
-                cover: cover,
-                releaseDate: releaseDate);
+                    id: id,
+                    code: code,
+                    title: title,
+                    actresses: actresses,
+                    genres: genres,
+                    studio: studio,
+                    boxArt: boxArt,
+                    cover: cover,
+                    releaseDate: releaseDate);
         }
 
         private static string NormalizeActress(string actress)
