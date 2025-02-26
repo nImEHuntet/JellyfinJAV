@@ -1,12 +1,41 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "W:\\Dev\\Repos\\JellyfinJAV\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{0B5322E5-53C7-4D33-B404-593FB1418881}|Tests\\Tests.csproj|w:\\dev\\repos\\jellyfinjav\\tests\\r18clienttest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0B5322E5-53C7-4D33-B404-593FB1418881}|Tests\\Tests.csproj|solutionrelative:tests\\r18clienttest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
-      "Orientation": 0,
+      "Orientation": 1,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedHeight": 113,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "R18ClientTest.cs",
+              "DocumentMoniker": "W:\\Dev\\Repos\\JellyfinJAV\\Tests\\R18ClientTest.cs",
+              "RelativeDocumentMoniker": "Tests\\R18ClientTest.cs",
+              "ToolTip": "W:\\Dev\\Repos\\JellyfinJAV\\Tests\\R18ClientTest.cs",
+              "RelativeToolTip": "Tests\\R18ClientTest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAewBcAAAA7AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-26T04:42:38.311Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{e1b7d1f8-9b3c-49b1-8f4f-bfc63a88835d}"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

@@ -62,8 +62,13 @@ namespace JellyfinJav.Api
         /// <returns>A list of every matched video.</returns>
         public static async Task<IEnumerable<VideoResult>>? Search(string searchCode)
         {
+            HttpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+            HttpClient.DefaultRequestHeaders.AcceptEncoding.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue("deflate"));
+            HttpClient.DefaultRequestHeaders.AcceptLanguage.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue("en-US"));
+            HttpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36");
+            HttpClient.DefaultRequestHeaders.Host = "r18.dev";
             var videos = new List<VideoResult>();
-            var jsonResponse = await HttpClient.GetAsync($"https://r18.dev/videos/vod/movies/detail/-/dvd_id={searchCode}/json").ConfigureAwait(false);
+            var jsonResponse = await HttpClient.GetAsync($"https://r18.dev/videos/vod/movies/detail/-/dvd_id={searchCode}/json");
             string? contentId;
 
             if (jsonResponse.IsSuccessStatusCode)
@@ -85,7 +90,7 @@ namespace JellyfinJav.Api
             }
             else
             {
-                return null!;
+                return null;
             }
         }
 

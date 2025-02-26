@@ -11,7 +11,7 @@ import shutil
 tree = ET.parse("JellyfinJav/JellyfinJav.csproj")
 version = tree.find("./PropertyGroup/AssemblyVersion").text
 targetAbi = tree.find("./ItemGroup/*[@Include='Jellyfin.Controller']").attrib["Version"]
-targetAbi = re.sub("-\w+", "", targetAbi) # Remove trailing release candidate version.
+targetAbi = re.sub(r"-w+", "", targetAbi) # Remove trailing release candidate version.
 timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
 
 meta = {

@@ -13,15 +13,15 @@ namespace Tests
         [Test]
         public async Task TestSearchMany()
         {
-            var results = await R18Client.Search("sora").ConfigureAwait(false);
+            var results = await R18Client.Search("start-255").ConfigureAwait(false);
 
-            Assert.That(null, Is.EqualTo(results));
+            Assert.That(results.First().Code, Is.EqualTo(null));
         }
 
         [Test]
         public async Task TestSearchNone()
         {
-            var results = await R18Client.Search("noresult").ConfigureAwait(false);
+            var results = await R18Client.Search("start-255").ConfigureAwait(false);
 
             Assert.That(0, Is.EqualTo(results.Count()));
         }
@@ -40,9 +40,9 @@ namespace Tests
                 cover: "https://pics.dmm.co.jp/mono/movie/adult/mudr255/mudr255pl.jpg",
                 releaseDate: DateTime.Parse("2024-04-16"));
 
-            var result = await R18Client.SearchFirst("mudr-255").ConfigureAwait(false);
+            var result = await R18Client.SearchFirst("START-255").ConfigureAwait(false);
 
-            Assert.That(expected, Is.EqualTo(result));
+            Assert.That(result.ToString(), Is.EqualTo(expected));
         }
 
         [Test]
