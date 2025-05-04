@@ -11,7 +11,7 @@ Don't expect perfection.
 # Instructions
 ### Installation
 
-Add the Repo url to Jellyfin using `https://raw.githubusercontent.com/Kyuhaku/JellyfinJAV/master/manifest.json`
+Add the Repo url to Jellyfin using `https://raw.githubusercontent.com/nImEHuntet/JellyfinJAV/master/manifest.json`
 
 
 ### Usage
